@@ -1,0 +1,28 @@
+Task 6. Clean up the workspace
+First, revert your backend to local so you can delete the storage bucket. Copy and replace the gcs configuration with the following:
+terraform {
+  backend "local" {
+    path = "terraform/state/terraform.tfstate"
+  }
+}
+Copied!
+Initialize the local backend again. Type yes at the prompt to confirm.
+terraform init -migrate-state
+Copied!
+In the main.tf file, add the force_destroy = true argument to your google_storage_bucket resource. When you delete a bucket, this boolean option will delete all contained objects.
+Note: If you try to delete a bucket that contains objects, Terraform will fail that run.
+Your resource configuration should resemble the following:
+
+
+resource "google_storage_bucket" "test-bucket-for-state" {
+  name        = "qwiklabs-gcp-01-8d7da656cd9d"
+  location    = "US" # Replace with EU for Europe region
+  uniform_bucket_level_access = true
+  force_destroy = true
+}
+Copied!
+Apply the changes. Type yes at the prompt to confirm.
+terraform apply
+Copied!
+You can now successfully destroy your infrastructure. Type yes at the prompt to confirm.
+terraform destroy
